@@ -1,10 +1,11 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useState } from "react";
-import { X, Check } from "lucide-react";
+import { useState, useRef } from "react";
+import { Check } from "lucide-react";
 import Link from "next/link";
 import { PRODUCTS, BRL } from "@/lib/products";
+import { ProductDetailsSection } from "@/components/store/ProductDetailsSection";
 import "../produto.css";
 
 export default function ProductPage() {
@@ -18,7 +19,10 @@ export default function ProductPage() {
   });
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
-  const [detailsOpen, setDetailsOpen] = useState(false);
+  const detailsRef = useRef<HTMLElement>(null);
+
+  const scrollToDetails = () =>
+    detailsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
 
   if (!product) {
     return (
@@ -105,6 +109,7 @@ export default function ProductPage() {
             <img src={src} alt={`${product.name} ${i + 1}`} />
           </div>
         ))}
+        <ProductDetailsSection product={product} ref={detailsRef} />
       </main>
 
       {/* ── Coluna direita — outros produtos ── */}
@@ -120,33 +125,10 @@ export default function ProductPage() {
 
       {/* ── Barra inferior ── */}
       <div className="pdp-details-bar">
-        <button
-          className="pdp-details-trigger"
-          onClick={() => setDetailsOpen(true)}
-        >
-          Details ↑
+        <button className="pdp-details-trigger" onClick={scrollToDetails}>
+          Detalhes ↓
         </button>
       </div>
-
-      {/* ── Painel slide-up ── */}
-      {detailsOpen && (
-        <>
-          <div
-            className="pdp-overlay"
-            onClick={() => setDetailsOpen(false)}
-          />
-          <div className="pdp-panel">
-            <button
-              className="pdp-panel-close"
-              onClick={() => setDetailsOpen(false)}
-            >
-              <X size={17} />
-            </button>
-            <p className="pdp-panel-blurb">{product.blurb}</p>
-            <p className="pdp-panel-spec">{product.details}</p>
-          </div>
-        </>
-      )}
     </div>
   );
 }

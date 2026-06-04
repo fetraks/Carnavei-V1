@@ -349,7 +349,7 @@
   cursor: pointer;
   user-select: none;
 }
-.cv-top img { height: 85px; width: auto; display: block; }
+.cv-top img { height: 68px; width: auto; display: block; }
 .cv-top.on-dark img { filter: brightness(0) invert(1); opacity: .94; }
 
 .cv-cart-btn {

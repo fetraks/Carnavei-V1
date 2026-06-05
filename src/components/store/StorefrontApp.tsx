@@ -86,30 +86,30 @@ export function StorefrontApp() {
   const sectionRefs = useRef<(HTMLElement | null)[]>(Array(heroProducts.length).fill(null));
   const gridRef = useRef<HTMLElement | null>(null);
 
-  // IntersectionObserver: mark sections in-view + track active index
+  // IntersectionObserver com root: null (viewport) — mais confiável no iOS Safari
+  // do que root: container (scroll element). O overflow: scroll do cv-store clips
+  // as seções fora de vista, então só a seção ativa intersecta o viewport.
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const allSections = [
+    const sections = [
       ...sectionRefs.current.filter(Boolean),
       gridRef.current,
     ].filter(Boolean) as HTMLElement[];
+
+    sections.forEach(s => s.classList.add("in-view"));
 
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            entry.target.classList.add("in-view");
-            const idx = allSections.indexOf(entry.target as HTMLElement);
+            const idx = sections.indexOf(entry.target as HTMLElement);
             if (idx !== -1) setActiveIndex(idx);
           }
         });
       },
-      { root: container, threshold: 0.55 }
+      { root: null, threshold: 0.5 }
     );
 
-    allSections.forEach((el) => observer.observe(el));
+    sections.forEach(s => observer.observe(s));
     return () => observer.disconnect();
   }, []);
 
@@ -139,7 +139,8 @@ export function StorefrontApp() {
     setCart((prev) => prev.filter((_, j) => j !== i));
 
   const count = cart.reduce((s, l) => s + l.qty, 0);
-  const dark = activeIndex < heroProducts.length; // hero sections are dark
+  const dark = activeIndex < heroProducts.length;
+  const gridSection = activeIndex === heroProducts.length;
 
   return (
     <div className="cv-shell">
@@ -225,7 +226,7 @@ export function StorefrontApp() {
 
       {/* Wordmark */}
       <div
-        className={`cv-top${dark ? " on-dark" : ""}`}
+        className={`cv-top${dark ? " on-dark" : ""}${gridSection ? " cv-top--grid" : ""}`}
         onClick={() => scrollToSection(0)}
         role="button"
         aria-label="Início"
@@ -238,7 +239,7 @@ export function StorefrontApp() {
 
       {/* Cart button */}
       <button
-        className={`cv-cart-btn${dark ? " on-dark" : ""}`}
+        className={`cv-cart-btn${dark ? " on-dark" : ""}${gridSection ? " cv-cart-btn--grid" : ""}`}
         onClick={() => setCartOpen(true)}
       >
         Sacola ({count})

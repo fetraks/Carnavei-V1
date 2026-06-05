@@ -42,7 +42,6 @@
   inset: 0;
   overflow-y: scroll;
   scroll-snap-type: y mandatory;
-  -webkit-overflow-scrolling: touch;
   /* hide scrollbar visually but keep scrollable */
   scrollbar-width: none;
 }
@@ -751,17 +750,39 @@
     right: 20px;
   }
 
-  /* Chrome — safe-area-inset para iPhone com notch/Dynamic Island */
-  .cv-top { left: 20px; top: 20px; }
-  .cv-top img { height: 40px; }
-
-  .cv-cart-btn {
+  /* ── Logo: safe-area + fade-out ao entrar na seção grid ── */
+  .cv-top {
     left: 20px;
-    bottom: calc(32px + env(safe-area-inset-bottom, 0px));
-    /* Pill de fundo para área de toque mais generosa */
+    top: 20px;
+    transition: opacity 350ms var(--ease-out);
+  }
+  .cv-top img { height: 40px; }
+  .cv-top--grid {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* ── Sacola: ancoragem top-right, translada para bottom-left nas heroes ──
+     translate usa 100% = dimensão própria do elemento:
+       x: -100vw + 40px + 100%  → desloca da borda direita (right:20px) até left:20px
+       y: 100svh - 52px - insets - 100%  → desloca do topo até a posição de rodapé
+  */
+  .cv-cart-btn {
+    top: calc(20px + env(safe-area-inset-top, 0px));
+    right: 20px;
+    bottom: auto;
+    left: auto;
     padding: 8px 14px;
     border-radius: 999px;
     font-size: 13.5px;
+    transform: translate(
+      calc(-100vw + 40px + 100%),
+      calc(100svh - 52px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 100%)
+    );
+    transition: transform 500ms var(--ease-out);
+  }
+  .cv-cart-btn--grid {
+    transform: translate(0, 0);
   }
   .cv-cart-btn.on-dark {
     background: rgba(255, 255, 255, 0.15);
@@ -776,9 +797,12 @@
     bottom: calc(10px + env(safe-area-inset-bottom, 0px));
   }
 
-  /* Grid section — scrollável para caber 5 produtos em 2 colunas */
+  /* Grid section — cresce pra acomodar todos os produtos sem scroll interno
+     (scroll aninhado no iOS Safari trava o scroll snap do container pai) */
   .cv-snap-section.cv-snap-grid {
-    overflow-y: auto;
+    height: auto;
+    min-height: 100svh;
+    overflow: hidden;
     align-items: flex-start;
   }
   .cv-product-grid {
@@ -793,6 +817,17 @@
 
   /* Scroll snap — proximity no mobile (menos agressivo) */
   .cv-store { scroll-snap-type: y proximity; }
+
+  /* Fallback: conteúdo sempre visível no mobile.
+     iOS Safari não dispara scroll events de forma confiável em containers
+     overflow:scroll — esse CSS garante visibilidade independente do JS. */
+  .cv-snap-content > *,
+  .cv-grid-header,
+  .cv-card,
+  .cv-snap-counter {
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }
 
 @media (max-width: 400px) {

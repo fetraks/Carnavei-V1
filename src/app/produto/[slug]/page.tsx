@@ -2,7 +2,7 @@
 
 import { useParams } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
-import { Check, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { Check, X, ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import Link from "next/link";
 import { PRODUCTS, BRL } from "@/lib/products";
 import { ProductDetailsSection } from "@/components/store/ProductDetailsSection";
@@ -20,7 +20,10 @@ export default function ProductPage() {
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
+  const [slideIdx, setSlideIdx] = useState(0);
   const detailsRef = useRef<HTMLElement>(null);
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
 
   useEffect(() => {
     if (lightboxIdx === null) return;
@@ -39,6 +42,30 @@ export default function ProductPage() {
 
   const scrollToDetails = () =>
     detailsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+
+  const scrollToDetailsSlide = () => {
+    if (!carouselRef.current || !product) return;
+    const el = carouselRef.current;
+    const slides = el.querySelectorAll<HTMLElement>(".pdp-slide");
+    const lastSlide = slides[slides.length - 1];
+    if (lastSlide) el.scrollLeft = lastSlide.offsetLeft;
+  };
+
+  useEffect(() => {
+    const el = carouselRef.current;
+    if (!el) return;
+    const updateSlide = () => {
+      if (!el.offsetWidth) return;
+      setSlideIdx(Math.round(el.scrollLeft / el.offsetWidth));
+    };
+    const handleTouchEnd = () => setTimeout(updateSlide, 400);
+    el.addEventListener("scroll", updateSlide, { passive: true });
+    el.addEventListener("touchend", handleTouchEnd, { passive: true });
+    return () => {
+      el.removeEventListener("scroll", updateSlide);
+      el.removeEventListener("touchend", handleTouchEnd);
+    };
+  }, []);
 
   if (!product) {
     return (
@@ -69,7 +96,13 @@ export default function ProductPage() {
           ← Carnavei
         </Link>
 
-        <p className="pdp-eyebrow">{product.eyebrow}</p>
+        <div className="pdp-eyebrow-row">
+          <p className="pdp-eyebrow">{product.eyebrow}</p>
+          <button className="pdp-details-jump" onClick={scrollToDetailsSlide}>
+            <Plus size={13} />
+            Detalhes
+          </button>
+        </div>
         <h1 className="pdp-name">{product.name}</h1>
         <p className="pdp-price">{BRL(product.price)}</p>
         <p className="pdp-installment">
@@ -169,6 +202,41 @@ export default function ProductPage() {
         ))}
         <ProductDetailsSection product={product} ref={detailsRef} />
       </main>
+
+      {/* ── Carrossel mobile (oculto no desktop via CSS) ── */}
+      <div className="pdp-carousel-wrap">
+        <div
+          className="pdp-carousel"
+          ref={carouselRef}
+        >
+          {product.images.map((src, i) => (
+            <div
+              key={i}
+              className="pdp-slide pdp-slide--img"
+              onTouchStart={(e) => {
+                touchStartRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+              }}
+              onTouchEnd={(e) => {
+                if (!touchStartRef.current) return;
+                const dx = Math.abs(e.changedTouches[0].clientX - touchStartRef.current.x);
+                const dy = Math.abs(e.changedTouches[0].clientY - touchStartRef.current.y);
+                if (dx < 10 && dy < 10) setLightboxIdx(i);
+                touchStartRef.current = null;
+              }}
+              onClick={() => setLightboxIdx(i)}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={src} alt={`${product.name} ${i + 1}`} />
+            </div>
+          ))}
+          <div className="pdp-slide pdp-slide--details">
+            <ProductDetailsSection product={product} />
+          </div>
+        </div>
+        <div className="pdp-carousel-counter">
+          {slideIdx + 1} / {product.images.length + 1}
+        </div>
+      </div>
 
       {/* ── Coluna direita — outros produtos ── */}
       <nav className="pdp-right">

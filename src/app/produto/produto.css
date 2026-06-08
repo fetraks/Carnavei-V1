@@ -451,6 +451,21 @@
 /* ── Dropdowns mobile (ocultos no desktop) ───────────────── */
 .pdp-selects-row { display: none; }
 
+/* ── Carrossel mobile (oculto no desktop) ────────────────── */
+.pdp-carousel-wrap { display: none; }
+
+/* ── Eyebrow row (botão detalhes oculto no desktop) ─────── */
+.pdp-eyebrow-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 9px;
+}
+.pdp-eyebrow-row .pdp-eyebrow {
+  margin-bottom: 0;
+}
+.pdp-details-jump { display: none; }
+
 /* ── Mobile ──────────────────────────────────────────────── */
 @media (max-width: 680px) {
   /*
@@ -500,6 +515,89 @@
     padding: 18px 16px 8px;
     overflow-y: auto;
   }
+
+  /* ── Galeria desktop oculta no mobile ── */
+  .pdp-gallery { display: none; }
+
+  /* ── Carrossel mobile ── */
+  .pdp-carousel-wrap {
+    display: block;
+    grid-column: 1;
+    grid-row: 2;
+    position: relative;
+    overflow: hidden;
+  }
+  .pdp-slide--img {
+    cursor: zoom-in;
+  }
+  .pdp-carousel {
+    display: flex;
+    overflow-x: scroll;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    height: 100%;
+    touch-action: pan-x;
+    -webkit-overflow-scrolling: touch;
+  }
+  .pdp-carousel::-webkit-scrollbar { display: none; }
+  .pdp-slide {
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+    height: 100%;
+  }
+  .pdp-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .pdp-slide--details {
+    overflow-y: auto;
+    background: #FBF8F4;
+    padding: 0 16px;
+  }
+  .pdp-slide--details .pdp-info-section > .pdp-info-rule:first-child {
+    display: none;
+  }
+  .pdp-info-col + .pdp-info-col {
+    padding-top: 24px;
+  }
+  .pdp-carousel-counter {
+    position: absolute;
+    bottom: 12px;
+    right: 14px;
+    font-family: var(--font-sans, system-ui, sans-serif);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    color: rgba(255, 255, 255, 0.9);
+    background: rgba(43, 37, 48, 0.4);
+    backdrop-filter: blur(4px);
+    padding: 3px 9px;
+    border-radius: 999px;
+    pointer-events: none;
+  }
+
+  /* ── Botão Detalhes na eyebrow row ── */
+  .pdp-details-jump {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: 1px solid #D8D0C8;
+    border-radius: 999px;
+    padding: 4px 10px 4px 8px;
+    font-family: var(--font-sans, system-ui, sans-serif);
+    font-size: 9.5px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #9A9298;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: border-color 150ms, color 150ms;
+  }
+  .pdp-details-jump:hover { border-color: #2B2530; color: #2B2530; }
 
   /* Back link no painel de info oculto no mobile (topbar tem o link) */
   .pdp-left .pdp-back        { display: none; }

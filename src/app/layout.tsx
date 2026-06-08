@@ -34,9 +34,12 @@ export default function RootLayout({
   return (
     <html
       lang="pt-BR"
-      className={`${hanken.variable} ${cormorant.variable} h-full antialiased`}
+      translate="no"
+      className={`${hanken.variable} ${cormorant.variable} antialiased notranslate`}
     >
-      <body className="min-h-full flex flex-col bg-background text-foreground">
+      {/* min-h-dvh (não h-full) — html/body com altura natural permitem o
+          scroll de documento que faz o Safari/Chrome esconderem a barra no mobile */}
+      <body className="min-h-dvh flex flex-col bg-background text-foreground">
         <CustomCursor />
         {children}
       </body>

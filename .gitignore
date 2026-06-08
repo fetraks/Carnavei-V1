@@ -1,12 +1,14 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
-# node_modules/.next movidos para .nosync (fora da sincronização do iCloud) — ver tarefas.md
+# node_modules fica em node_modules.nosync (fora do sync do iCloud); node_modules
+# é um symlink. O iCloud às vezes cria cópias de conflito ("node_modules 2" etc) —
+# o glob abaixo ignora todas. Ver tarefas.md / dev.sh.
+/node_modules*
 /*.nosync
-/node_modules.nosync
-/.next.nosync
 /.pnp
+# helper local pra religar o dev server quando o iCloud derruba o symlink
+/dev.sh
 .pnp.*
 .yarn/*
 !.yarn/patches

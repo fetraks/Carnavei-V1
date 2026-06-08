@@ -708,6 +708,29 @@
 
 /* ── Mobile ────────────────────────────────────────────────── */
 @media (max-width: 640px) {
+  /* ── DOCUMENT-SCROLL: no mobile o documento rola (não o .cv-store), para que
+        o Safari/Chrome escondam a barra de URL/navegação ao rolar (imersivo).
+        O desktop permanece position:fixed (regra base, fora deste media query). ── */
+  .cv-shell { position: static; }
+  .cv-store {
+    position: static;
+    inset: auto;
+    overflow-y: visible;
+    scroll-snap-type: none;
+  }
+  /* o snap passa para o documento */
+  html { scroll-snap-type: y proximity; }
+
+  /* Drawer do carrinho/PDP e backdrops: fixos ao viewport (eram absolute
+     relativos ao shell, que agora é static e rola com o documento) */
+  .cv-cart-backdrop,
+  .cv-cart,
+  .cv-pdp-backdrop,
+  .cv-pdp-drawer { position: fixed; }
+
+  /* Handle do container não faz sentido no document-scroll */
+  .cv-handle { display: none; }
+
   /* Nav lateral — oculta no mobile */
   .cv-snap-nav { display: none; }
 
@@ -752,6 +775,7 @@
 
   /* ── Logo: safe-area + fade-out ao entrar na seção grid ── */
   .cv-top {
+    position: fixed;
     left: 20px;
     top: 20px;
     transition: opacity 350ms var(--ease-out);
@@ -768,6 +792,7 @@
        y: 100svh - 52px - insets - 100%  → desloca do topo até a posição de rodapé
   */
   .cv-cart-btn {
+    position: fixed;
     top: calc(20px + env(safe-area-inset-top, 0px));
     right: 20px;
     bottom: auto;

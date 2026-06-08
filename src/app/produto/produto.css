@@ -469,18 +469,25 @@
 /* ── Mobile ──────────────────────────────────────────────── */
 @media (max-width: 680px) {
   /*
-   * Layout móvel: topbar fixa → galeria (flex) → info → CTA bar
-   * Flexbox column — mais confiável que CSS Grid no iOS Safari com position:fixed
+   * Layout móvel: SCROLL DE DOCUMENTO (não position:fixed) para que o Safari/Chrome
+   * escondam a barra de URL/navegação ao rolar (modo imersivo).
+   * topbar (sticky top) → carrossel (altura fixa) → info (flui) → CTA bar (sticky bottom)
    * DOM order: topbar | carousel-wrap | pdp-left | pdp-details-bar
+   * Desktop permanece position:fixed (regra base, fora deste media query).
    */
   .pdp-shell {
+    position: static;
     display: flex;
     flex-direction: column;
+    min-height: 100svh;
   }
 
-  /* ── Top bar com botão Voltar ── */
+  /* ── Top bar com botão Voltar — gruda no topo ── */
   .pdp-topbar {
-    flex: 0 0 44px;
+    position: sticky;
+    top: 0;
+    height: 44px;
+    flex: none;
     display: flex;
     align-items: center;
     padding: 0 16px;
@@ -496,24 +503,24 @@
   /* ── Galeria desktop oculta no mobile ── */
   .pdp-gallery { display: none; }
 
-  /* ── Painel de info ── */
+  /* ── Painel de info — altura natural (não estica), p/ o conteúdo poder
+        ultrapassar a tela e gerar scroll de documento ── */
   .pdp-left {
-    flex: 0 0 auto;
+    flex: none;
     border-right: none;
     border-top: 1px solid rgba(0, 0, 0, 0.07);
     padding: 18px 16px 8px;
-    overflow-y: auto;
     touch-action: manipulation;
   }
 
-  /* ── Carrossel mobile ── */
+  /* ── Carrossel mobile — altura fixa; o documento rola por baixo ── */
   .pdp-carousel-wrap {
     display: flex;
     flex-direction: column;
-    flex: 1 1 0;
+    flex: none;
+    height: 62svh;
     position: relative;
     overflow: hidden;
-    min-height: 0;
   }
   .pdp-slide--img {
     cursor: zoom-in;
@@ -558,6 +565,8 @@
     overflow-y: auto;
     background: #FBF8F4;
     padding: 0 16px;
+    /* o carrossel pai é pan-x; aqui liberamos o scroll vertical interno */
+    touch-action: pan-y;
   }
   .pdp-slide--details .pdp-info-section > .pdp-info-rule:first-child {
     display: none;
@@ -659,13 +668,18 @@
     font-size: 12px;
   }
 
-  /* ── CTA bar ── */
+  /* ── CTA bar — gruda no fundo da viewport durante o scroll ── */
   .pdp-details-bar {
-    flex: 0 0 auto;
+    position: sticky;
+    bottom: 0;
+    flex: none;
     height: auto;
     padding: 10px 16px calc(env(safe-area-inset-bottom, 0px) + 8px);
     flex-direction: column;
     gap: 6px;
+    background: #f0efed;
+    border-top: 1px solid rgba(0, 0, 0, 0.07);
+    z-index: 4;
   }
   .pdp-details-trigger { display: none; }
   .pdp-details-cta {

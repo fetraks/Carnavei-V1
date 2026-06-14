@@ -2,18 +2,13 @@ import Link from "next/link";
 import Image from "next/image";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import LoginForm from "./LoginForm";
+import RegisterForm from "./RegisterForm";
 
-export const metadata = { title: "Entrar · Carnavei" };
+export const metadata = { title: "Criar conta · Carnavei" };
 
-export default async function LoginPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ callbackUrl?: string }>;
-}) {
+export default async function RegistroPage() {
   const session = await auth();
-  const { callbackUrl } = await searchParams;
-  if (session?.user) redirect(callbackUrl ?? "/conta");
+  if (session?.user) redirect("/conta");
 
   return (
     <div className="min-h-screen bg-[var(--paper)] flex flex-col items-center justify-center px-6 text-center">
@@ -29,18 +24,13 @@ export default async function LoginPage({
       </Link>
 
       <h1 className="font-[family-name:var(--font-heading)] text-3xl text-[var(--ink)] mb-2">
-        Entrar
+        Criar conta
       </h1>
       <p className="text-sm text-[var(--ink-soft)] mb-8 max-w-xs">
-        Acesse sua conta para acompanhar seus pedidos.
+        Crie sua conta para acompanhar seus pedidos e comprar mais rápido.
       </p>
 
-      <LoginForm />
-
-      <p className="text-xs text-[var(--ink-faint)] mt-8 max-w-xs">
-        Você não precisa de conta para comprar. O login serve para acompanhar
-        seus pedidos.
-      </p>
+      <RegisterForm />
 
       <Link
         href="/"

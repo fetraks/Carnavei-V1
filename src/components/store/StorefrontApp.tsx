@@ -78,9 +78,11 @@ function CartDrawer({
 export function StorefrontApp({
   products,
   initialCart = [],
+  user = null,
 }: {
   products: Product[];
   initialCart?: CartItem[];
+  user?: { name?: string | null; image?: string | null } | null;
 }) {
   const heroProducts = products.filter(p => !p.heroExclude);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -252,6 +254,26 @@ export function StorefrontApp({
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/carnavei-wordmark.svg" alt="Carnavei" />
       </div>
+
+      {/* Account / login — top-right, espelha o wordmark */}
+      <Link
+        href={user ? "/conta" : "/login"}
+        className={`cv-account${dark ? " on-dark" : ""}${gridSection ? " cv-account--grid" : ""}`}
+        aria-label={user ? "Minha conta" : "Entrar"}
+      >
+        {user ? (
+          user.image ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img className="cv-account-avatar" src={user.image} alt="" />
+          ) : (
+            <span className="cv-account-initial">
+              {(user.name ?? "?").trim().charAt(0).toUpperCase()}
+            </span>
+          )
+        ) : (
+          <span className="cv-account-text">Entrar</span>
+        )}
+      </Link>
 
       {/* Cart button */}
       <button

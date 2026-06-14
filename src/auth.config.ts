@@ -1,6 +1,7 @@
 import type { NextAuthConfig } from "next-auth";
 import Google from "next-auth/providers/google";
-import Facebook from "next-auth/providers/facebook";
+// Facebook: reativar quando o app no Meta for Developers for aprovado.
+// import Facebook from "next-auth/providers/facebook";
 
 // Config "Edge-safe": SEM Prisma adapter e SEM acesso ao banco.
 // É a parte da config que o middleware (Edge runtime) consegue carregar.
@@ -13,7 +14,8 @@ export default {
   // self-hosted/dev para o Auth.js confiar no host do request.
   secret: process.env.AUTH_SECRET,
   trustHost: true,
-  providers: [Google, Facebook],
+  // Credentials (e-mail/senha) é adicionado em auth.ts (precisa do banco, não é Edge-safe).
+  providers: [Google],
   pages: {
     signIn: "/login",
   },

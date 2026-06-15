@@ -1,10 +1,35 @@
 import { NextResponse } from "next/server";
-import { randomBytes } from "crypto";
+import { randomBytes, createHmac, timingSafeEqual } from "crypto";
 import { mpPayment } from "@/lib/mercadopago";
 import { db } from "@/lib/db";
 import { sendOrderConfirmationEmail, sendAdminOrderEmail, sendWelcomeEmail } from "@/lib/email";
 
+// Valida a assinatura HMAC do Mercado Pago (header x-signature).
+// Manifest: "id:<data.id>;request-id:<x-request-id>;ts:<ts>;" assinado com
+// MP_WEBHOOK_SECRET (chave configurada no painel do MP). Se o segredo não
+// estiver definido (dev), a validação é pulada.
+function verifyMpSignature(req: Request, dataId: string): boolean {
+  const secret = process.env.MP_WEBHOOK_SECRET;
+  if (!secret) return true;
+
+  const sig = req.headers.get("x-signature") ?? "";
+  const requestId = req.headers.get("x-request-id") ?? "";
+  const parts = Object.fromEntries(
+    sig.split(",").map((p) => p.split("=").map((s) => s.trim()))
+  ) as { ts?: string; v1?: string };
+  if (!parts.ts || !parts.v1) return false;
+
+  const manifest = `id:${dataId};request-id:${requestId};ts:${parts.ts};`;
+  const hmac = createHmac("sha256", secret).update(manifest).digest("hex");
+  try {
+    return timingSafeEqual(Buffer.from(hmac), Buffer.from(parts.v1));
+  } catch {
+    return false;
+  }
+}
+
 export async function POST(req: Request) {
+  const url = new URL(req.url);
   const body = await req.json();
 
   // Mercado Pago envia notificações de diferentes tipos
@@ -15,6 +40,12 @@ export async function POST(req: Request) {
   const paymentId = body.data?.id;
   if (!paymentId) {
     return NextResponse.json({ error: "payment id ausente" }, { status: 400 });
+  }
+
+  // Segurança: rejeita notificações sem assinatura válida (em produção).
+  const dataId = url.searchParams.get("data.id") || String(paymentId);
+  if (!verifyMpSignature(req, dataId)) {
+    return NextResponse.json({ error: "assinatura inválida" }, { status: 401 });
   }
 
   const payment = await mpPayment.get({ id: paymentId });

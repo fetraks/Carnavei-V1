@@ -34,6 +34,24 @@ const EMPTY: Address = {
   cep: "", street: "", number: "", complement: "", district: "", city: "", state: "",
 };
 
+// Pré-preenchimento APENAS em desenvolvimento — agiliza os testes de checkout.
+// Em produção (build) o formulário sempre começa vazio.
+const TEST_FILL: Address = {
+  name: "Fernando Fujie",
+  email: "fetraks@gmail.com",
+  cpf: "123.456.789-09",
+  phone: "(11) 99999-8888",
+  cep: "01528-020",
+  street: "Rua Tenente Azevedo",
+  number: "104",
+  complement: "apto 81 B",
+  district: "Aclimação",
+  city: "São Paulo",
+  state: "SP",
+};
+
+const INITIAL_ADDR = process.env.NODE_ENV === "development" ? TEST_FILL : EMPTY;
+
 function maskCPF(v: string) {
   return v.replace(/\D/g, "").slice(0, 11)
     .replace(/(\d{3})(\d)/, "$1.$2")
@@ -54,7 +72,7 @@ function maskCEP(v: string) {
 
 export default function CheckoutPage() {
   const [cart, setCart] = useState<CartItem[]>([]);
-  const [addr, setAddr] = useState<Address>(EMPTY);
+  const [addr, setAddr] = useState<Address>(INITIAL_ADDR);
   const [cepLoading, setCepLoading] = useState(false);
   const [shippingOptions, setShippingOptions] = useState<ShippingOption[]>([]);
   const [shippingLoading, setShippingLoading] = useState(false);

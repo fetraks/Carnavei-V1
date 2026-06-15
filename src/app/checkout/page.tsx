@@ -147,7 +147,11 @@ export default function CheckoutPage() {
         body: JSON.stringify({ shipping: selectedShipping, address: addr }),
       });
       const data = await res.json();
-      const url = data.sandboxInitPoint ?? data.initPoint;
+      // Usa init_point (não sandbox_init_point): com credenciais de teste no
+      // modelo novo (APP_USR), o sandbox_init_point entra em loop de login.
+      // O init_point abre o checkout correto — de teste, porque as credenciais
+      // que criaram a preferência são de teste.
+      const url = data.initPoint ?? data.sandboxInitPoint;
       if (url) window.location.href = url;
     } catch {
       setSubmitting(false);

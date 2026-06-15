@@ -189,12 +189,12 @@ export default function CheckoutPage() {
                 )}
               </div>
 
+              <Field label="Endereço" value={addr.street}
+                onChange={(v) => set("street", v)} placeholder="Rua / Avenida..." className="sm:col-span-2" />
               <Field label="Número" value={addr.number}
                 onChange={(v) => set("number", v)} placeholder="123" />
-              <Field label="Rua" value={addr.street}
-                onChange={(v) => set("street", v)} placeholder="Rua das Flores" className="sm:col-span-2" />
               <Field label="Complemento" value={addr.complement}
-                onChange={(v) => set("complement", v)} placeholder="Apto 4, bloco B (opcional)" className="sm:col-span-2" />
+                onChange={(v) => set("complement", v)} placeholder="Apto, bloco (opcional)" />
               <Field label="Bairro" value={addr.district}
                 onChange={(v) => set("district", v)} placeholder="Centro" />
               <Field label="Cidade" value={addr.city}

@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
+import { randomBytes } from "crypto";
 import { mpPayment } from "@/lib/mercadopago";
 import { db } from "@/lib/db";
-import { sendOrderConfirmationEmail, sendAdminOrderEmail } from "@/lib/email";
+import { sendOrderConfirmationEmail, sendAdminOrderEmail, sendWelcomeEmail } from "@/lib/email";
 
 export async function POST(req: Request) {
   const body = await req.json();
@@ -60,11 +61,38 @@ export async function POST(req: Request) {
 
   const shippingCents = Math.round(meta.shipping.price * 100);
 
+  // Auto-cadastro: vincula o pedido a uma conta. Se o cliente ainda não tem
+  // conta, cria uma (sem senha) e gera um link para ele definir a senha.
+  const email = meta.address.email.toLowerCase().trim();
+  let userId: string | undefined;
+  let welcomeUrl: string | undefined;
+  const existingUser = await db.user.findUnique({ where: { email } });
+  if (existingUser) {
+    userId = existingUser.id;
+  } else {
+    const newUser = await db.user.create({
+      data: {
+        email,
+        name: meta.address.name,
+        phone: meta.address.phone,
+        role: "CUSTOMER",
+      },
+    });
+    userId = newUser.id;
+    // Token de 7 dias para definir a senha (reusa o fluxo de /redefinir-senha)
+    const token = randomBytes(32).toString("hex");
+    await db.verificationToken.create({
+      data: { identifier: email, token, expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) },
+    });
+    welcomeUrl = `${process.env.NEXT_PUBLIC_APP_URL}/redefinir-senha?token=${token}`;
+  }
+
   let order;
   try {
     order = await db.order.create({
     data: {
       status: "PAID",
+      userId,
       mercadoPagoPaymentId: mpPaymentId,
       paymentMethod: String((payment as unknown as Record<string, unknown>)["payment_type_id"] ?? "unknown"),
       subtotal,
@@ -139,6 +167,10 @@ export async function POST(req: Request) {
     await Promise.all([
       sendOrderConfirmationEmail(emailData),
       sendAdminOrderEmail(emailData),
+      // Só para conta recém-criada: convite para definir a senha
+      welcomeUrl
+        ? sendWelcomeEmail(email, meta.address.name, welcomeUrl)
+        : Promise.resolve(),
     ]);
   } catch (err) {
     console.error("[order-email]", err);

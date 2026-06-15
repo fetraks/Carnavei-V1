@@ -55,6 +55,22 @@ export async function sendPasswordResetEmail(to: string, resetUrl: string) {
   return resend.emails.send({ from: FROM, to, subject: "Redefinir sua senha · Carnavei", html });
 }
 
+// ── Boas-vindas + ativar conta (auto-cadastro pós-compra) ─────────────
+export async function sendWelcomeEmail(to: string, name: string, setPasswordUrl: string) {
+  const html = shell(`
+    <h1 style="margin:0 0 12px;font-size:22px;">Bem-vinda à Carnavei 💛</h1>
+    <p style="margin:0 0 20px;color:${BRAND.inkSoft};font-size:15px;line-height:1.6;">
+      ${name.split(" ")[0]}, criamos uma conta para você acompanhar seus pedidos.
+      Defina uma senha para acessar quando quiser — leva 30 segundos.
+    </p>
+    <p style="margin:0 0 24px;">${btn(setPasswordUrl, "Criar minha senha")}</p>
+    <p style="margin:0;color:${BRAND.inkSoft};font-size:13px;line-height:1.6;">
+      Você também pode entrar com o Google usando este mesmo e-mail. Se preferir
+      não criar conta agora, sem problemas — seus pedidos ficam guardados.
+    </p>`);
+  return resend.emails.send({ from: FROM, to, subject: "Sua conta na Carnavei está pronta 💛", html });
+}
+
 // ── Confirmação de pedido (cliente) ───────────────────────────────────
 type OrderEmailData = {
   customerName: string;

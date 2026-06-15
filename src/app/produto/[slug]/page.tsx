@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { getProductBySlug, getProducts } from "@/lib/queries";
+import { getInstallment, installmentLabel } from "@/lib/installments";
 import { ProductPageClient } from "./ProductPageClient";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
@@ -22,6 +23,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   if (!product) notFound();
 
   const others = allProducts.filter((p) => p.id !== slug);
+  const installment = installmentLabel(await getInstallment(product.price));
 
-  return <ProductPageClient product={product} others={others} />;
+  return <ProductPageClient product={product} others={others} installment={installment} />;
 }

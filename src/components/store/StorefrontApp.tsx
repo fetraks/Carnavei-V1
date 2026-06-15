@@ -80,10 +80,12 @@ export function StorefrontApp({
   products,
   initialCart = [],
   user = null,
+  installments = {},
 }: {
   products: Product[];
   initialCart?: CartItem[];
   user?: { name?: string | null; image?: string | null } | null;
+  installments?: Record<string, string | null>;
 }) {
   const heroProducts = products.filter(p => !p.heroExclude);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -188,7 +190,10 @@ export function StorefrontApp({
               <p className="cv-snap-eyebrow">{p.eyebrow}</p>
               <h2 className="cv-snap-name">{p.name}</h2>
               <p className="cv-snap-tagline">{p.tagline}</p>
-              <p className="cv-snap-price">{BRL(p.price)}</p>
+              <p className="cv-snap-price">{BRL(p.price)} <span className="cv-snap-pix">no Pix</span></p>
+              {installments[p.id] && (
+                <p className="cv-snap-installment">{installments[p.id]}</p>
+              )}
               <Link href={`/produto/${p.id}`} className="cv-btn cv-btn-primary">
                 Ver produto
               </Link>

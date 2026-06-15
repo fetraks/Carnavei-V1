@@ -12,9 +12,11 @@ import "../produto.css";
 export function ProductPageClient({
   product,
   others,
+  installment,
 }: {
   product: Product;
   others: Product[];
+  installment?: string | null;
 }) {
   const [size, setSize] = useState(product.sizes[0] ?? "");
   const [qty, setQty] = useState(1);
@@ -171,7 +173,7 @@ export function ProductPageClient({
         <h1 className="pdp-name">{product.name}</h1>
         <p className="pdp-price">{BRL(product.price)} <span className="pdp-price-pix">no Pix</span></p>
         <p className="pdp-installment">
-          ou até {maxInstallments(product.price)}× no cartão
+          {installment ?? `ou até ${maxInstallments(product.price)}× no cartão`}
         </p>
 
         <p className="pdp-label">Tamanho</p>

@@ -162,6 +162,18 @@
   font-weight: 600;
   color: rgba(255, 255, 255, 0.88);
   letter-spacing: 0.02em;
+  margin-bottom: 2px;
+}
+.cv-snap-pix {
+  font-size: 0.72em;
+  font-weight: 500;
+  color: #FBDAD3;
+  letter-spacing: 0.03em;
+}
+.cv-snap-installment {
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.66);
+  letter-spacing: 0.01em;
   margin-bottom: 22px;
 }
 

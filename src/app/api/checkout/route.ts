@@ -67,18 +67,17 @@ export async function POST(req: Request) {
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL!;
 
-  // Em sandbox, o Mercado Pago rejeita pagador com e-mail real ("uma das partes
-  // é de teste"). Quando MP_TEST_BUYER_EMAIL está definido (ambiente de teste),
-  // usamos o e-mail do usuário de teste comprador. O e-mail real do cliente
-  // continua no metadata.address (pedido + e-mails). Em produção a env não existe.
-  const payerEmail = process.env.MP_TEST_BUYER_EMAIL || address.email;
-
-  const preference = await mpPreference.create({
-    body: {
-      items,
-      payer: {
+  // Em sandbox (MP_TEST_BUYER_EMAIL definido) NÃO enviamos o pagador: passar
+  // e-mail real dava "uma das partes é de teste", e passar e-mail de test_user
+  // fazia o checkout exigir login dessa conta (que falha no mobile). Sem payer,
+  // o Mercado Pago abre o checkout em modo convidado (paga só com o cartão).
+  // Em produção, enviamos o pagador com o e-mail real do cliente.
+  const isTest = !!process.env.MP_TEST_BUYER_EMAIL;
+  const payer = isTest
+    ? undefined
+    : {
         name: address.name,
-        email: payerEmail,
+        email: address.email,
         identification: { type: "CPF", number: address.cpf },
         phone: { number: address.phone },
         address: {
@@ -86,7 +85,12 @@ export async function POST(req: Request) {
           street_name: address.street,
           street_number: address.number,
         },
-      },
+      };
+
+  const preference = await mpPreference.create({
+    body: {
+      items,
+      ...(payer ? { payer } : {}),
       shipments: {
         // Sem `cost` aqui: o frete já entra como item (acima). Ter os dois
         // cobrava o frete em dobro. Mantemos só o endereço de entrega.

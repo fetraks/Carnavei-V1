@@ -14,6 +14,7 @@ const nextConfig: NextConfig = {
     "192.168.1.22",
     "192.168.15.4",
     "tali.fujiex.com.br",
+    "carnavei.fujiextech.com",
   ],
 };
 

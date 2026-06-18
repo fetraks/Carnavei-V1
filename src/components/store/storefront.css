@@ -225,13 +225,16 @@
 .cv-snap-section.cv-snap-grid {
   background: var(--paper-deep);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
+  height: auto;
+  min-height: 100svh;
+  overflow: visible;
 }
 .cv-grid-inner {
   width: 100%;
   max-width: 860px;
-  padding: 0 40px;
+  padding: 80px 40px 80px;
 }
 .cv-grid-header {
   margin-bottom: 32px;
@@ -915,7 +918,7 @@
   .cv-snap-section.cv-snap-grid {
     height: auto;
     min-height: 100svh;
-    overflow: hidden;
+    overflow: visible;
     align-items: flex-start;
   }
   .cv-product-grid {

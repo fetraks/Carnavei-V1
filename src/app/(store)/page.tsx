@@ -2,55 +2,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
+import { getProducts } from "@/lib/queries";
+import { BRL, maxInstallments } from "@/lib/products";
 
-// Produtos mockados — substituir pelo seed do Prisma no Dia 2
-const PRODUCTS_MOCK = [
-  {
-    id: "1",
-    slug: "choker-branca",
-    name: "Choker Branca",
-    price: 15900,
-    eyebrow: "COPA 2026",
-    image: "/images/choker-branca-2.jpg",
-  },
-  {
-    id: "2",
-    slug: "bolsa-canarinho",
-    name: "Bolsa Canarinho",
-    price: 18900,
-    eyebrow: "FEITO À MÃO",
-    image: "/images/bolsa-canarinho-ensaio-01.jpg",
-  },
-  {
-    id: "3",
-    slug: "corrente-torcida",
-    name: "Corrente Torcida",
-    price: 16900,
-    eyebrow: "MAIS AMADA",
-    image: "/images/chain-ensaio-01.jpg",
-  },
-  {
-    id: "4",
-    slug: "choker-bandeira",
-    name: "Choker Bandeira",
-    price: 14900,
-    eyebrow: "FEITO À MÃO",
-    image: "/images/choker-ensaio-01.jpg",
-  },
-];
-
-function formatPrice(cents: number) {
-  return new Intl.NumberFormat("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  }).format(cents / 100);
-}
-
-function formatInstallment(cents: number, n: number) {
-  return `${n}x ${formatPrice(Math.ceil(cents / n))}`;
-}
-
-export default function HomePage() {
+export default async function HomePage() {
+  const products = await getProducts();
   return (
     <>
       {/* Hero — full-bleed com scrim lateral e nav de texto */}
@@ -58,10 +14,10 @@ export default function HomePage() {
         {/* Foto full-bleed */}
         <div className="absolute inset-0">
           <Image
-            src="/images/hero-1.jpg"
-            alt="Carnavei — acessórios artesanais"
+            src="/images/lenco-brasil-estampa-copa-top.jpg"
+            alt="Carnavei — acessórios artesanais Copa 2026"
             fill
-            className="object-cover object-center"
+            className="object-cover object-top"
             priority
           />
           {/* Scrim gradiente da esquerda */}
@@ -160,42 +116,45 @@ export default function HomePage() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-          {PRODUCTS_MOCK.map((product) => (
-            <Link key={product.id} href={`/produto/${product.slug}`} className="group">
-              {/* Frame arredondado com sombra suave */}
-              <div
-                className="aspect-square rounded-[var(--radius)] overflow-hidden bg-white mb-3 relative"
-                style={{ boxShadow: "0 6px 20px -8px rgba(43,37,48,.14)" }}
-              >
-                <Image
-                  src={product.image}
-                  alt={product.name}
-                  fill
-                  className="object-cover transition-transform duration-[480ms] ease-out group-hover:scale-[1.04]"
-                />
-              </div>
-              {/* Meta — aparece no hover */}
-              <div className="transition-opacity duration-200 group-hover:opacity-100 opacity-90">
-                <p
-                  className="text-[10px] font-semibold uppercase tracking-[0.22em] mb-1"
-                  style={{ color: "var(--terracotta)" }}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+          {products.map((product) => {
+            const img = product.thumbnail ?? product.images[0];
+            const n = maxInstallments(product.price);
+            const installment = BRL(product.price / n);
+            return (
+              <Link key={product.id} href={`/produto/${product.id}`} className="group">
+                <div
+                  className="aspect-square rounded-[var(--radius)] overflow-hidden bg-white mb-3 relative"
+                  style={{ boxShadow: "0 6px 20px -8px rgba(43,37,48,.14)" }}
                 >
-                  {product.eyebrow}
-                </p>
-                <p className="font-heading text-lg leading-tight">{product.name}</p>
-                <p
-                  className="text-sm font-semibold mt-0.5"
-                  style={{ color: "var(--terracotta-hover)" }}
-                >
-                  {formatPrice(product.price)}
-                </p>
-                <p className="text-xs text-[var(--ink-faint)] mt-0.5">
-                  ou {formatInstallment(product.price, 3)} sem juros
-                </p>
-              </div>
-            </Link>
-          ))}
+                  <Image
+                    src={img}
+                    alt={product.name}
+                    fill
+                    className="object-cover transition-transform duration-[480ms] ease-out group-hover:scale-[1.04]"
+                  />
+                </div>
+                <div className="transition-opacity duration-200 group-hover:opacity-100 opacity-90">
+                  <p
+                    className="text-[10px] font-semibold uppercase tracking-[0.22em] mb-1"
+                    style={{ color: "var(--terracotta)" }}
+                  >
+                    {product.eyebrow}
+                  </p>
+                  <p className="font-heading text-lg leading-tight">{product.name}</p>
+                  <p
+                    className="text-sm font-semibold mt-0.5"
+                    style={{ color: "var(--terracotta-hover)" }}
+                  >
+                    {BRL(product.price)}
+                  </p>
+                  <p className="text-xs text-[var(--ink-faint)] mt-0.5">
+                    ou {n}× de {installment} sem juros
+                  </p>
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </section>
 

@@ -5,7 +5,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = process.env.NEXT_PUBLIC_APP_URL ?? "https://carnavei.com.br";
 
   const products = await db.product.findMany({
-    where: { active: true },
+    where: { status: "ACTIVE" },
     select: { slug: true, updatedAt: true },
   });
 

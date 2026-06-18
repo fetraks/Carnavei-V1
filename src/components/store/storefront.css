@@ -283,6 +283,9 @@
 .cv-snap-section.in-view .cv-card:nth-child(3) { opacity: 1; transform: none; transition-delay: 240ms; }
 .cv-snap-section.in-view .cv-card:nth-child(4) { opacity: 1; transform: none; transition-delay: 300ms; }
 .cv-snap-section.in-view .cv-card:nth-child(5) { opacity: 1; transform: none; transition-delay: 360ms; }
+.cv-snap-section.in-view .cv-card:nth-child(6) { opacity: 1; transform: none; transition-delay: 420ms; }
+.cv-snap-section.in-view .cv-card:nth-child(7) { opacity: 1; transform: none; transition-delay: 480ms; }
+.cv-snap-section.in-view .cv-card:nth-child(8) { opacity: 1; transform: none; transition-delay: 540ms; }
 
 .cv-card-frame {
   aspect-ratio: 1 / 1;

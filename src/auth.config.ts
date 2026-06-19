@@ -20,6 +20,15 @@ export default {
     signIn: "/login",
   },
   callbacks: {
+    // Propaga id e role do token para a sessão — necessário aqui para que o
+    // middleware (que usa só authConfig) consiga ler session.user.role.
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id as string;
+        session.user.role = token.role as "CUSTOMER" | "ADMIN";
+      }
+      return session;
+    },
     // Protege rotas no middleware. Retornar false/redirect bloqueia o acesso.
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;

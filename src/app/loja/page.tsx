@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { StorefrontApp } from "@/components/store/StorefrontApp";
 import { getProducts } from "@/lib/queries";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Carnavei — Loja",
   description: "Acessórios artesanais femininos feitos à mão. Cada peça é única.",

@@ -32,6 +32,31 @@ const newProducts = [
     sizes: ["Único"],
     weight: 50, width: 5, height: 1, length: 5,
   },
+  {
+    slug: "lenco-br-summer",
+    name: "Lenço BR Summer",
+    category: "Lenço",
+    eyebrow: "Copa 2026",
+    tagline: "O Brasil no pescoço. O verão no coração.",
+    blurb: "Lenço artesanal com estampa Copa 2026 — o amarelo e o verde em cada dobra. Usa no pescoço, na cabeça ou no cabelo: três looks, uma peça.",
+    details: "Tecido leve · estampa Copa 2026 · uso versátil (pescoço, cabeça, cabelo) · tamanho único",
+    hero: "/images/lenco-br-summer-1.jpg",
+    heroPosition: "center 40%",
+    thumbnail: "/images/lenco-br-summer-2.jpg",
+    images: [
+      "/images/lenco-br-summer-1.jpg",
+      "/images/lenco-br-summer-2.jpg",
+      "/images/lenco-br-summer-3.jpg",
+      "/images/lenco-br-summer-4.jpg",
+      "/images/lenco-br-summer-5.jpg",
+      "/images/lenco-br-summer-6.jpg",
+      "/images/lenco-br-summer-7.jpg",
+      "/images/lenco-br-summer-8.jpg",
+    ],
+    price: 5000, // R$ 50,00 em centavos
+    sizes: ["Único"],
+    weight: 50, width: 15, height: 1, length: 15,
+  },
 ];
 
 async function main() {
